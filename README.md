@@ -1,7 +1,7 @@
 # spid-compliant-certificates
 
 Python native solution to generate and validate X.509 certificates according
-to Avviso SPID n.29 v3.
+to [Avviso SPID n.29 v3](https://www.agid.gov.it/sites/default/files/repository_files/spid-avviso-n29v3-specifiche_sp_pubblici_e_privati_0.pdf).
 
 ## Installation
 
