@@ -45,6 +45,10 @@ class ColourFilter(logging.Filter):
         return True
 
 
+def _c(f: str) -> str:
+    return '%(color)s' + f + '\x1b[0m'
+
+
 _sh = logging.StreamHandler()
 _sh.setLevel(logging.DEBUG)
 
@@ -52,7 +56,8 @@ if platform.system() == 'Windows':
     fmt = '[%(levelname)1.1s] %(message)s'
     _sh.setFormatter(logging.Formatter(fmt))
 else:
-    fmt = '[%(color)s%(levelname)1.1s\x1b[0m] %(message)s'
+    levelname = _c('%(levelname)-5.5s')
+    fmt = '[' + levelname + '] %(message)s'
     _sh.setFormatter(logging.Formatter(fmt))
     _sh.addFilter(ColourFilter())
 
