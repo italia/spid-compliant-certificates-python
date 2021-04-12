@@ -39,6 +39,7 @@ autolabeler:
 -
   label: 'enhancement'
   branch:
+  - '/dependabot\/.+/'
   - '/enhancement\/.+/'
   - '/feat\/.+/'
   - '/feature\/.+/'
