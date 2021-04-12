@@ -27,40 +27,34 @@ YELLOW = '\x1b[33m'
 CYAN = '\x1b[36m'
 
 
-def _fmt(c: str = None) -> str:
-    if not c:
-        return '[%(levelname)1.1s] %(message)s'
-    else:
-        return '[' + c + '%(levelname)1.1s\x1b[0m] %(message)s'
-
-
-class ColouredFormatter(logging.Formatter):
-    def formatMessage(self, record: logging.LogRecord) -> str:
+class ColourFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
         levelno = record.levelno
-
         if levelno >= logging.CRITICAL:
-            fmt = _fmt(RED)
+            record.color = RED
         elif levelno >= logging.ERROR:
-            fmt = _fmt(RED)
+            record.color = RED
         elif levelno >= logging.WARNING:
-            fmt = _fmt(YELLOW)
+            record.color = YELLOW
         elif levelno >= logging.INFO:
-            fmt = _fmt(GREEN)
+            record.color = GREEN
         elif levelno >= logging.DEBUG:
-            fmt = _fmt(CYAN)
+            record.color = CYAN
         else:
-            fmt = _fmt()
-
-        return fmt % record.__dict__
+            record.color = '\x1b[0m'
+        return True
 
 
 _sh = logging.StreamHandler()
 _sh.setLevel(logging.DEBUG)
 
 if platform.system() == 'Windows':
-    _sh.setFormatter(logging.Formatter('[%(levelname)1.1s] %(message)s'))
+    fmt = '[%(levelname)1.1s] %(message)s'
+    _sh.setFormatter(logging.Formatter(fmt))
 else:
-    _sh.setFormatter(ColouredFormatter())
+    fmt = '[%(color)s%(levelname)1.1s\x1b[0m] %(message)s'
+    _sh.setFormatter(logging.Formatter(fmt))
+    _sh.addFilter(ColourFilter())
 
 LOG = logging.getLogger()
 LOG.setLevel(logging.DEBUG)
