@@ -55,7 +55,7 @@ setup(
     long_description=long_description(),
     long_description_content_type='text/markdown',
     license='MIT',
-    url='https://github.com/italia/spid-compliant-certificates',
+    url='https://github.com/italia/spid-compliant-certificates-python',
 
     packages=find_packages(exclude=['bin']),
     install_requires=get_requirements(),
