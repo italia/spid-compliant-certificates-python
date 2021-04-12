@@ -9,12 +9,13 @@ to propose changes to this document in a pull request.
 
 ## How to contribute
 
-1.  If you found something to add/fix, open an issue an discuss with the community
+1.  If you found something to add/fix, open an issue an discuss with the
+    community
 
 2.  Once ready, fork the repository (or pull from `main` if already forked)
 
-3.  In your fork, create a branch starting from `main` and name it by following the
-    [naming conventions](#branches-naming-conventions)
+3.  In your fork, create a branch starting from `main` and name it by following
+    the [naming conventions](#branches-naming-conventions)
 
 4.  Make your changes by following the [coding guidelines](#coding-guidelines)
 
@@ -43,7 +44,8 @@ to propose changes to this document in a pull request.
 
 Releases are issued by making use of
 [Release Drafter](https://github.com/release-drafter/release-drafter) action.
-In order to propery work, some naming conventions for branches must be followed.
+In order to propery work, some naming conventions for branches must be
+followed.
 
 ### Bugfix
 
@@ -65,7 +67,9 @@ of the following prefixes:
 
 ### Maintenance
 
-If you're working on maintenance tasks (e.g. documentation, repository management, source styling), please name your local branch with one of the following prefixes:
+If you're working on maintenance tasks (e.g. documentation, repository
+management, source styling), please name your local branch with one of the
+following prefixes:
 
--   `chore` (e.g. `chore/remove-trailing-whitespaces`)
--   `style` (e.g. `style/remove-trailing-whitespaces`)
+-   `chore` (e.g. `chore/remove-trailing-spaces`)
+-   `style` (e.g. `style/remove-trailing-spaces`)
