@@ -58,6 +58,8 @@ jobs:
           type=semver,pattern={{major}}.{{minor}}
           type=semver,pattern={{major}}
           type=edge,branch=main
+        labels: |
+          org.opencontainers.image.title=spid-compliant-certificates
     -
       name: Setup QEMU
       uses: docker/setup-qemu-action@v1
