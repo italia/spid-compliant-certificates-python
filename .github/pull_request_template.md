@@ -1,11 +1,11 @@
 **Scope of the pull request**
 
-Write here what the pull request does. Also mention any issue it solves and/or creates.
+Write here what the pull request does. Also mention any issue it closes and/or creates.
 
-**Solved issues**
+**Closed issues**
 
-- #123
-- #456
+- Close #123
+- Close #456
 
 **Added issues**
 
