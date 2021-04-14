@@ -60,4 +60,5 @@ setup(
     packages=find_packages(exclude=['bin']),
     install_requires=get_requirements(),
     scripts=['bin/spid-compliant-certificates'],
+    python_requires='>=3.6',
 )
