@@ -45,7 +45,7 @@ def _validate_private_arguments(cert_opts: Dict) -> None:
     pattern = r'^(CF:IT-[a-zA-Z0-9]{16}|VATIT-\d{11})$'
     org_id = cert_opts['org_id']
     if not re.match(pattern, org_id):
-        emsg = ('Invalid value for organization identifier (%s)' % org_id)
+        emsg = (f'Invalid value for organization identifier ({org_id})')
         raise ValueError(emsg)
 
 
@@ -54,7 +54,7 @@ def _validate_public_arguments(cert_opts: Dict) -> None:
     pattern = r'^PA:IT-\S{1,11}$'
     org_id = cert_opts['org_id']
     if not re.match(pattern, org_id):
-        emsg = ('Invalid value for organization identifier (%s)' % org_id)
+        emsg = (f'Invalid value for organization identifier ({org_id})')
         raise ValueError(emsg)
 
     # check if the ipa code is valid
@@ -88,7 +88,7 @@ def _validate_public_arguments(cert_opts: Dict) -> None:
 
     if not res['risposta']['listaResponse']:
         emsg = [
-            'The IPA code (%s) refers to something that does not exist.' % ipa_code,  # noqa
+            f'The IPA code ({ipa_code}) refers to something that does not exist.',  # noqa
             'Check it by yourself at https://indicepa.gov.it/ipa-portale/consultazione/indirizzo-sede/ricerca-ente'  # noqa
         ]
         raise ValueError(' '.join(emsg))
@@ -101,7 +101,7 @@ def _validate_public_arguments(cert_opts: Dict) -> None:
 
     if not ipa_code_is_valid:
         emsg = [
-            'The IPA code (%s) refers to something that does not exist.' % ipa_code,  # noqa
+            f'The IPA code ({ipa_code}) refers to something that does not exist.',  # noqa
             'Check it by yourself at https://indicepa.gov.it/ipa-portale/consultazione/indirizzo-sede/ricerca-ente'  # noqa
         ]
         raise ValueError(' '.join(emsg))
@@ -114,14 +114,14 @@ def validate_arguments(cert_opts: Dict) -> None:
     elif sector == 'public':
         _validate_public_arguments(cert_opts)
     else:
-        emsg = 'Invalid value for sector (%s)' % sector
+        emsg = f'Invalid value for sector ({sector})'
         raise Exception(emsg)
 
 
 def gen_private_key(key_size: int, key_out: pathlib.PosixPath) -> rsa.RSAPrivateKey:  # noqa
     # check if the private key file already exists
     if key_out.exists():
-        emsg = 'File %s already exists' % key_out
+        emsg = f'File {key_out} already exists'
         raise Exception(emsg)
 
     # generate private key
@@ -193,7 +193,7 @@ def _extensions(key: rsa.RSAPrivateKey, cert_opts: Dict) -> List[Tuple[bool, x50
             )
         )
     else:
-        emsg = 'Invalid value for sector (%s)' % sector
+        emsg = f'Invalid value for sector ({sector})'
         raise Exception(emsg)
 
     # extensions list
@@ -301,26 +301,21 @@ def generate(cert_opts: Dict, crypto_opts: Dict) -> None:
     key_size = crypto_opts['key_size']
     key_out = crypto_opts['key_out']
     key = gen_private_key(key_size, key_out)
-    LOG.info('Private key saved to %s' % key_out)
-    LOG.info('  Inspect with OpenSSL: openssl rsa -in %s -noout -text'
-             % key_out)
+    LOG.info(f'Private key saved to {key_out}')
+    LOG.info(f'  Inspect with OpenSSL: openssl rsa -in {key_out} -noout -text')
 
     # generate the csr
     csr_out = crypto_opts['csr_out']
     gen_csr(key, cert_opts, crypto_opts)
-    LOG.info('CSR saved to %s' % csr_out)
-    LOG.info('  Inspect with OpenSSL: openssl req -in %s -noout -text'
-             % csr_out)
-    LOG.info('  Inspect with OpenSSL: openssl asn1parse -i -inform PEM -in %s'
-             % csr_out)
+    LOG.info(f'CSR saved to {csr_out}')
+    LOG.info(f'  Inspect with OpenSSL: openssl req -in {csr_out} -noout -text')
+    LOG.info(f'  Inspect with OpenSSL: openssl asn1parse -i -inform PEM -in {csr_out}')  # noqa
 
     # generate self-signed certificate
     sector = cert_opts['sector']
     crt_out = crypto_opts['crt_out']
     if sector == 'public':
         gen_self_signed(key, cert_opts, crypto_opts)
-        LOG.info('Self-signed certificate saved to %s' % crt_out)
-        LOG.info('  Inspect with OpenSSL: openssl x509 -noout -text -in %s'
-                 % crt_out)
-        LOG.info(('  Inspect with OpenSSL: '
-                  + 'openssl asn1parse -i -inform PEM -in %s') % crt_out)
+        LOG.info(f'Self-signed certificate saved to {crt_out}')
+        LOG.info(f'  Inspect with OpenSSL: openssl x509 -noout -text -in {crt_out}')  # noqa
+        LOG.info(f'  Inspect with OpenSSL: openssl asn1parse -i -inform PEM -in {crt_out}')  # noqa
