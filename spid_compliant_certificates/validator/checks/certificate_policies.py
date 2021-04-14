@@ -72,7 +72,7 @@ def certificate_policies(extensions: x509.Extensions, sector: str) -> List[Tuple
                         etext = q.explicit_text
 
                         msg = f'policy {oid} must have '
-                        msg += f'UserNotice.ExplicitText={exp_etext} (now: {etext})'
+                        msg += f'UserNotice.ExplicitText={exp_etext} (now: {etext})'  # noqa
 
                         res = FAILURE if etext != exp_etext else SUCCESS
                         checks.append((res, msg))
@@ -84,7 +84,7 @@ def certificate_policies(extensions: x509.Extensions, sector: str) -> List[Tuple
                         etext = q.explicit_text
 
                         msg = f'policy {oid} must have '
-                        msg += f'UserNotice.ExplicitText={exp_etext} (now: {etext})'
+                        msg += f'UserNotice.ExplicitText={exp_etext} (now: {etext})'  # noqa
 
                         res = FAILURE if etext != exp_etext else SUCCESS
                         checks.append((res, msg))
@@ -95,7 +95,7 @@ def certificate_policies(extensions: x509.Extensions, sector: str) -> List[Tuple
                         etext = q.explicit_text
 
                         msg = f'policy {oid} must have '
-                        msg += f'UserNotice.ExplicitText={exp_etext} (now: {etext})'
+                        msg += f'UserNotice.ExplicitText={exp_etext} (now: {etext})'  # noqa
 
                         res = FAILURE if etext != exp_etext else SUCCESS
                         checks.append((res, msg))

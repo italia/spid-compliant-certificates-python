@@ -50,7 +50,7 @@ def key_type_and_size(cert: x509.Certificate) -> List[Tuple[bool, str]]:
     min_size = 2048
     size = pk.key_size
 
-    msg = f'The key size must be greater than or equal to {min_size} (now: {size})'
+    msg = f'The key size must be greater than or equal to {min_size} (now: {size})'  # noqa
     res = FAILURE if size < min_size else SUCCESS
     checks.append((res, msg))
 

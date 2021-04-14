@@ -66,7 +66,7 @@ def subject_dn(subj: x509.Name, sector: str) -> List[Tuple[bool, str]]:
 
     # check if all the mandatory attre are present
     for attr in MANDATORY_ATTRS:
-        msg = f'Name attribute [{attr._name}, {attr.dotted_string}] must be present in subjectDN'
+        msg = f'Name attribute [{attr._name}, {attr.dotted_string}] must be present in subjectDN'  # noqa
         res = FAILURE if attr not in subj_attrs else SUCCESS
         checks.append((res, msg))
 
