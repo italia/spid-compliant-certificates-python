@@ -44,13 +44,13 @@ class SortingHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
 def not_empty_string(value):
     if not re.match(r'^\S(.*\S)?$', value):
-        emsg = 'Format "%s" is not accepted' % value
+        emsg = f'Format "{value}" is not accepted'
         raise argparse.ArgumentTypeError(emsg)
     return value
 
 
 def logo():
-    print('''
+    print(f'''
    _____ _____ _____ _____     _____                      _ _             _
   / ____|  __ \_   _|  __ \   / ____|                    | (_)           | |
  | (___ | |__) || | | |  | | | |     ___  _ __ ___  _ __ | |_  __ _ _ __ | |_
@@ -62,10 +62,10 @@ def logo():
  | |     ___ _ __| |_ _| |_ _  ___ __ _| |_ ___  ___
  | |    / _ \ '__| __| |  _| |/ __/ _` | __/ _ \/ __|
  | |___|  __/ |  | |_| | | | | (_| (_| | ||  __/\__ \\
-  \_____\___|_|   \__|_|_| |_|\___\__,_|\__\___||___/  v%s
+  \_____\___|_|   \__|_|_| |_|\___\__,_|\__\___||___/  v{version}
 
 
-''' % version)  # noqa
+''')  # noqa
 
 # main
 
@@ -234,19 +234,17 @@ if __name__ == '__main__':
             sys.exit(1)
     elif args.mode == 'validator':
         if not args.crt_file.exists():
-            LOG.error('Unable to find certificate file %s' % args.crt_file)
+            LOG.error(f'Unable to find certificate file {args.crt_file}')
             sys.exit(1)
         try:
-            LOG.info(
-                'Validating certificate %s against %s sector specifications'
-                % (args.crt_file, args.sector)
-            )
+            LOG.info(f'Validating certificate {args.crt_file} '
+                     + f'against {args.sector} sector specifications')
             validate(args.crt_file, args.sector)
         except Exception as e:
             LOG.error(e)
             sys.exit(1)
     else:
-        LOG.error('Invalid mode (%s)' % args.mode)
+        LOG.error(f'Invalid mode ({args.mode})')
         sys.exit(1)
 
     sys.exit(0)
