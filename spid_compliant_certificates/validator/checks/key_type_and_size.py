@@ -42,7 +42,7 @@ def key_type_and_size(cert: x509.Certificate) -> List[Tuple[bool, str]]:
     # check the keypair type
     exp_pk_type = 'RSA'
     pk_type = 'RSA' if isinstance(pk, rsa.RSAPublicKey) else 'NOT ALLOWED'
-    msg = 'The keypair must be %s' % exp_pk_type
+    msg = f'The keypair must be {exp_pk_type}'
     res = FAILURE if pk_type != exp_pk_type else SUCCESS
     checks.append((res, msg))
 
@@ -50,13 +50,11 @@ def key_type_and_size(cert: x509.Certificate) -> List[Tuple[bool, str]]:
     min_size = 2048
     size = pk.key_size
 
-    msg = ('The key size must be greater than or equal to %d (now: %d)'
-           % (min_size, size))
+    msg = f'The key size must be greater than or equal to {min_size} (now: {size})'
     res = FAILURE if size < min_size else SUCCESS
     checks.append((res, msg))
 
-    msg = ('The key size must be one of %s (now: %d)'
-           % (ALLOWED_SIZES, size))
+    msg = f'The key size must be one of {ALLOWED_SIZES} (now: {size})'
     res = FAILURE if size not in ALLOWED_SIZES else SUCCESS
     checks.append((res, msg))
 

@@ -48,7 +48,7 @@ def certificate_policies(extensions: x509.Extensions, sector: str) -> List[Tuple
         ext = extensions.get_extension_for_class(ext_cls)
 
         # check if critical
-        msg = '%s can not be set as critical' % ext_name
+        msg = f'{ext_name} can not be set as critical'
         res = FAILURE if ext.critical else SUCCESS
         checks.append((res, msg))
 
@@ -58,7 +58,7 @@ def certificate_policies(extensions: x509.Extensions, sector: str) -> List[Tuple
             is_present = any(
                 p.policy_identifier.dotted_string == ep for p in policies
             )
-            msg = 'policy %s must be present' % (ep)
+            msg = f'policy {ep} must be present'
             res = SUCCESS if is_present else FAILURE
             checks.append((res, msg))
 
@@ -71,9 +71,8 @@ def certificate_policies(extensions: x509.Extensions, sector: str) -> List[Tuple
                         exp_etext = 'agIDcert'
                         etext = q.explicit_text
 
-                        msg = 'policy %s must have ' % (oid)
-                        msg += ('UserNotice.ExplicitText=%s (now: %s)'
-                                % (exp_etext, etext))
+                        msg = f'policy {oid} must have '
+                        msg += f'UserNotice.ExplicitText={exp_etext} (now: {etext})'
 
                         res = FAILURE if etext != exp_etext else SUCCESS
                         checks.append((res, msg))
@@ -84,9 +83,8 @@ def certificate_policies(extensions: x509.Extensions, sector: str) -> List[Tuple
                         exp_etext = 'cert_SP_Pub'
                         etext = q.explicit_text
 
-                        msg = 'policy %s must have ' % (oid)
-                        msg += ('UserNotice.ExplicitText=%s (now: %s)'
-                                % (exp_etext, etext))
+                        msg = f'policy {oid} must have '
+                        msg += f'UserNotice.ExplicitText={exp_etext} (now: {etext})'
 
                         res = FAILURE if etext != exp_etext else SUCCESS
                         checks.append((res, msg))
@@ -96,14 +94,13 @@ def certificate_policies(extensions: x509.Extensions, sector: str) -> List[Tuple
                         exp_etext = 'cert_SP_Priv'
                         etext = q.explicit_text
 
-                        msg = 'policy %s must have ' % (oid)
-                        msg += ('UserNotice.ExplicitText=%s (now: %s)'
-                                % (exp_etext, etext))
+                        msg = f'policy {oid} must have '
+                        msg += f'UserNotice.ExplicitText={exp_etext} (now: {etext})'
 
                         res = FAILURE if etext != exp_etext else SUCCESS
                         checks.append((res, msg))
     except x509.ExtensionNotFound:
-        msg = '%s must be present' % ext_name
+        msg = f'{ext_name} must be present'
         checks.append((FAILURE, msg))
 
     return checks

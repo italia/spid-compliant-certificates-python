@@ -34,8 +34,7 @@ ALLOWED_ALGS = [
 def digest_algorithm(alg: str) -> List[Tuple[bool, str]]:
     checks = []
 
-    msg = ('The digest algorithm must be one of %s (now: %s)'
-           % (ALLOWED_ALGS, alg))
+    msg = f'The digest algorithm must be one of {ALLOWED_ALGS} (now: {alg})'
     res = FAILURE if alg not in ALLOWED_ALGS else SUCCESS
     checks.append((res, msg))
 
