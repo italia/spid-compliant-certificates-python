@@ -34,7 +34,7 @@ FAILURE = not SUCCESS
 
 def _indent(txt: str, count=1) -> str:
     i = '    '
-    return '%s%s' % (i * count, txt)
+    return f'{i * count}{txt}'
 
 
 def _do_check(checks: List[Tuple[bool, str]], base_msg: str) -> bool:
@@ -46,9 +46,9 @@ def _do_check(checks: List[Tuple[bool, str]], base_msg: str) -> bool:
             break
 
     if is_success:
-        LOG.info('%s: success' % base_msg)
+        LOG.info(f'{base_msg}: success')
     else:
-        LOG.error('%s: failure' % base_msg)
+        LOG.error(f'{base_msg}: failure')
 
     for res, msg in checks:
         if res is FAILURE:
@@ -108,6 +108,5 @@ def validate(crt_file: str, sector: str) -> None:
 
     for result in results:
         if not result:
-            msg = ('The certificate %s does not match %s sector specifications'
-                   % (crt_file, sector))
+            msg = f'The certificate {crt_file} does not match {sector} sector specifications'  # noqa
             raise Exception(msg)
