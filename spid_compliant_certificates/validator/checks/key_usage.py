@@ -37,22 +37,22 @@ def key_usage(extensions: x509.Extensions) -> List[Tuple[bool, str]]:
     try:
         ext = extensions.get_extension_for_class(ext_cls)
 
-        msg = '%s must be set as critical' % ext_name
+        msg = f'{ext_name} must be set as critical'
         res = FAILURE if not ext.critical else SUCCESS
         checks.append((res, msg))
 
         for usage in ['content_commitment', 'digital_signature']:
-            msg = '%s must be set' % (usage)
+            msg = f'{usage} must be set'
             res = FAILURE if not getattr(ext.value, usage) else SUCCESS
             checks.append((res, msg))
 
         for usage in ['crl_sign', 'data_encipherment', 'key_agreement',
                       'key_cert_sign', 'key_encipherment']:
-            msg = '%s must be unset' % (usage)
+            msg = f'{usage} must be unset'
             res = FAILURE if getattr(ext.value, usage) else SUCCESS
             checks.append((res, msg))
     except x509.ExtensionNotFound:
-        msg = '%s must be present' % ext_name
+        msg = f'{ext_name} must be present'
         res = FAILURE
         checks.append((res, msg))
 

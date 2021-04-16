@@ -36,7 +36,7 @@ def basic_constraints(extensions: x509.Extensions) -> List[Tuple[bool, str]]:
     try:
         ext = extensions.get_extension_for_class(ext_cls)
 
-        msg = '%s can not be set as critical' % ext_name
+        msg = f'{ext_name} can not be set as critical'
         res = FAILURE if ext.critical else SUCCESS
         checks.append((res, msg))
 
@@ -44,7 +44,7 @@ def basic_constraints(extensions: x509.Extensions) -> List[Tuple[bool, str]]:
         res = FAILURE if ext.value.ca else SUCCESS
         checks.append((res, msg))
     except x509.ExtensionNotFound:
-        msg = '%s must be present' % ext_name
+        msg = f'{ext_name} must be present'
         checks.append((FAILURE, msg))
 
     return checks

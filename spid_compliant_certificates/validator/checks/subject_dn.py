@@ -60,22 +60,19 @@ def subject_dn(subj: x509.Name, sector: str) -> List[Tuple[bool, str]]:
 
     # check if not allowed attrs are present
     for attr in NOT_ALLOWED_ATTRS:
-        msg = ('Name attribute [%s, %s] is not allowed in subjectDN'
-               % (attr._name, attr.dotted_string))
+        msg = 'Name attribute [{attr._name}, {attr.dotted_string}] is not allowed in subjectDN'  # noqa
         res = FAILURE if attr in subj_attrs else SUCCESS
         checks.append((res, msg))
 
     # check if all the mandatory attre are present
     for attr in MANDATORY_ATTRS:
-        msg = ('Name attribute [%s, %s] must be present in subjectDN'
-               % (attr._name, attr.dotted_string))
+        msg = f'Name attribute [{attr._name}, {attr.dotted_string}] must be present in subjectDN'  # noqa
         res = FAILURE if attr not in subj_attrs else SUCCESS
         checks.append((res, msg))
 
     # check the name attribute value
     for attr in subj:
-        msg = ('Value for name attribute [%s, %s] can not be empty'
-               % (attr.oid._name, attr.oid.dotted_string))
+        msg = f'Value for name attribute [{attr.oid._name}, {attr.oid.dotted_string}] can not be empty'  # noqa
         res = FAILURE if not attr.value else SUCCESS
         checks.append((res, msg))
 
@@ -87,19 +84,16 @@ def subject_dn(subj: x509.Name, sector: str) -> List[Tuple[bool, str]]:
             elif sector == 'private':
                 pattern = r'^(CF:IT-[a-zA-Z0-9]{16}|VATIT-\d{11})$'
             else:
-                msg = 'Invalid sector (%s)' % sector
+                msg = f'Invalid sector ({sector})'
                 res = FAILURE
                 checks.append((res, msg))
 
-            msg = ('Value for name attribute [%s, %s] must match [%s] (now: %s)'  # noqa
-                   % (attr.oid._name, attr.oid.dotted_string, pattern,
-                      value))
+            msg = f'Value for name attribute [{attr.oid._name}, {attr.oid.dotted_string}] must match [{pattern}] (now: {value})'  # noqa
             res = FAILURE if not re.match(pattern, value) else SUCCESS
             checks.append((res, msg))
 
         if attr.oid == x509.OID_COUNTRY_NAME:
-            msg = ('Value for name attribute [%s, %s] is not a valid country code (%s)'  # noqa
-                   % (attr.oid._name, attr.oid.dotted_string, value))
+            msg = f'Value for name attribute [{attr.oid._name}, {attr.oid.dotted_string}] is not a valid country code ({value})'  # noqa
             try:
                 res = FAILURE if not isinstance(countries.get(value), Country) else SUCCESS  # noqa
                 checks.append((res, msg))

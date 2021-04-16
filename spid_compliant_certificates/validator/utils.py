@@ -25,7 +25,7 @@ from typing import Tuple
 
 def pem_to_der(cert_file: str) -> Tuple[bytes, str]:
     if not os.path.exists(cert_file):
-        msg = 'File at %s not found' % cert_file
+        msg = f'File at {cert_file} not found'
         return None, msg
 
     lines = []
@@ -34,11 +34,11 @@ def pem_to_der(cert_file: str) -> Tuple[bytes, str]:
         fp.close()
 
     if ('-----BEGIN CERTIFICATE-----' not in lines[0]):
-        msg = 'Certificate at %s must be a PEM' % cert_file
+        msg = f'Certificate at {cert_file} must be a PEM'
         return None, msg
 
     if ('-----END CERTIFICATE-----' not in lines[len(lines)-1]):
-        msg = 'Certificate at %s must be a PEM' % cert_file
+        msg = f'Certificate at {cert_file} must be a PEM'
         return None, msg
 
     b64_data = ''.join([line[:-1] for line in lines[1:-1]])
