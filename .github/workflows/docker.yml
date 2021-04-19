@@ -14,7 +14,8 @@ jobs:
     outputs:
       DOCKERHUB_USERNAME: ${{ steps.dockerhub_username.outputs.is_set }}
       DOCKERHUB_TOKEN: ${{ steps.dockerhub_token.outputs.is_set }}
-      ALL: ${{ steps.dockerhub_token.outputs.is_set && steps.dockerhub_token.outputs.is_set }}
+      DOCKER_BASE_REPO: ${{ steps.docker_base_repo.outputs.is_set }}
+      ALL: ${{ steps.dockerhub_username.outputs.is_set && steps.dockerhub_token.outputs.is_set && steps.docker_base_repo.outputs.is_set }}
     steps:
     -
       name: Check DOCKERHUB_USERNAME
@@ -28,6 +29,13 @@ jobs:
       run: |
         echo "is_set: ${{ secrets.DOCKERHUB_TOKEN != '' }}"
         echo "::set-output name=is_set::${{ secrets.DOCKERHUB_TOKEN != '' }}"
+    -
+      name: Check DOCKER_BASE_REPO
+      id: docker_base_repo
+      run: |
+        echo "is_set: ${{ secrets.DOCKER_BASE_REPO != '' }}"
+        echo "::set-output name=is_set::${{ secrets.DOCKER_BASE_REPO != '' }}"
+
   build_and_push:
     name: Build and push
     runs-on: ubuntu-latest
@@ -38,18 +46,20 @@ jobs:
       name: Checkout
       uses: actions/checkout@v2
     -
-      if: ${{ needs.check_secrets.outputs.DOCKERHUB_USERNAME == 'true' }}
+      if: ${{ needs.check_secrets.outputs.DOCKER_BASE_REPO == 'true' }}
       name: Docker meta
       id: docker_meta
       uses: crazy-max/ghaction-docker-meta@v2
       with:
         images: |
-          ${{ secrets.DOCKERHUB_USERNAME }}/spid-compliant-certificates
+          ${{ secrets.DOCKER_BASE_REPO }}/spid-compliant-certificates
         tags: |
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
           type=semver,pattern={{major}}
           type=edge,branch=main
+        labels: |
+          org.opencontainers.image.title=spid-compliant-certificates
     -
       name: Setup QEMU
       uses: docker/setup-qemu-action@v1
