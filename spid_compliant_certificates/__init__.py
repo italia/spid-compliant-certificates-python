@@ -31,7 +31,7 @@ _min = 1
 _mic = 0
 
 # release level (alpha, beta, rc, final)
-_rel = 'alpha'
+_rel = 'final'
 
 # serial
 _ser = 0
