@@ -24,6 +24,7 @@ from cryptography import x509
 
 from spid_compliant_certificates.commons import logger
 from spid_compliant_certificates.validator import checks
+from spid_compliant_certificates.validator.report import Check, Report, Test
 from spid_compliant_certificates.validator.utils import pem_to_der
 
 LOG = logger.LOG
@@ -37,7 +38,7 @@ def _indent(txt: str, count=1) -> str:
     return f'{i * count}{txt}'
 
 
-def _do_check(checks: List[Tuple[bool, str]], base_msg: str) -> bool:
+def _do_check_v1(checks: List[Tuple[bool, str]], base_msg: str) -> bool:
     is_success = True
 
     for res, msg in checks:
@@ -59,9 +60,18 @@ def _do_check(checks: List[Tuple[bool, str]], base_msg: str) -> bool:
     return is_success
 
 
-def validate(crt_file: str, sector: str) -> None:
-    results = []
+def _do_check_v2(checks: List[Tuple[bool, str]], base_msg: str) -> Test:
+    t = Test(base_msg)
+    for res, msg in checks:
+        t.add_check(Check(msg, 'success' if res else 'failure', None))
+    return t
 
+
+def _do_check(checks: List[Tuple[bool, str]], base_msg: str) -> bool:
+    return _do_check_v2(checks, base_msg)
+
+
+def validate(crt_file: str, sector: str) -> Report:
     # load certificate file
     crt = None
     der, msg = pem_to_der(crt_file)
@@ -70,43 +80,42 @@ def validate(crt_file: str, sector: str) -> None:
     else:
         raise Exception(msg)
 
+    r = Report(str(crt_file.absolute()))
+
     # check key type and size
-    results.append(_do_check(
+    r.add_test(_do_check(
         checks.key_type_and_size(crt),
         'Checking the key type and size'
     ))
 
     # check digest algorithm
-    results.append(_do_check(
+    r.add_test(_do_check(
         checks.digest_algorithm(crt.signature_hash_algorithm.name),
         'Checking the signature digest algorithm'
     ))
 
     # check SubjectDN
-    results.append(_do_check(
+    r.add_test(_do_check(
         checks.subject_dn(crt.subject, sector),
         'Checking the SubjectDN'
     ))
 
     # check basicConstraints
-    results.append(_do_check(
+    r.add_test(_do_check(
         checks.basic_constraints(crt.extensions),
         'Checking basicConstraints x509 extension'
     ))
 
     # check keyUsage
-    results.append(_do_check(
+    r.add_test(_do_check(
         checks.key_usage(crt.extensions),
         'Checking keyUsage x509 extension'
     ))
 
     # check certificatePolicier
-    results.append(_do_check(
+    r.add_test(_do_check(
         checks.certificate_policies(crt.extensions, sector),
         'Checking certificatePolicies x509 extension'
     ))
 
-    for result in results:
-        if not result:
-            msg = f'The certificate {crt_file} does not match {sector} sector specifications'  # noqa
-            raise Exception(msg)
+    return r

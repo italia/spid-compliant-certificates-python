@@ -30,6 +30,7 @@ from spid_compliant_certificates import version
 from spid_compliant_certificates.commons import logger
 from spid_compliant_certificates.generator import generate
 from spid_compliant_certificates.validator import validate
+from spid_compliant_certificates.validator.report import ReportSerializer
 
 LOG = logger.LOG
 
@@ -239,7 +240,18 @@ if __name__ == '__main__':
         try:
             LOG.info(f'Validating certificate {args.crt_file} '
                      + f'against {args.sector} sector specifications')
-            validate(args.crt_file, args.sector)
+            r = validate(args.crt_file, args.sector)
+            rs = ReportSerializer()
+
+            if r.result == 'success':
+                LOG.info('It is ok')
+                LOG.info(rs.serialize(r, 'json'))
+            elif r.result == 'failure':
+                LOG.error('It is not good')
+                LOG.error(rs.serialize(r, 'json'))
+            else:
+                LOG.warn('Something gone wrong')
+
         except Exception as e:
             LOG.error(e)
             sys.exit(1)
