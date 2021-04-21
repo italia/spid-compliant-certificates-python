@@ -19,40 +19,77 @@
 # SOFTWARE.
 
 import json
-from typing import Callable, List, Tuple
+from datetime import datetime
+from typing import Any, Callable, Dict, Optional
 
 SUCCESS = True
 FAILURE = not SUCCESS
 
 
-class Report(object):
-    def __init__(self):
+class Check(object):
+    def __init__(self, description: str, result: str, value: Any):
+        self.description = description
+        self.result = result
+        self.value = value
+
+    def as_dict(self) -> Dict:
+        d = {}
+        for k in ['description', 'result', 'value']:
+            d[k] = getattr(self, k)
+        return d
+
+    def as_txt(self, fmt: Optional[str] = None) -> str:
+        if fmt:
+            return fmt % self.as_dict()
+        else:
+            return f'{self.description} [{self.result}][{self.value}]'
+
+
+class Test(object):
+    def __init__(self, description: str):
+        self.description = description
         self.result = 'success'
+        self.checks = []
+
+    def add_check(self, check: Check) -> None:
+        if check.result == 'failure':
+            self.result = 'failure'
+        self.checks.append(check)
+
+    def as_dict(self) -> Dict:
+        d = {}
+        for k in ['description', 'result']:
+            d[k] = getattr(self, k)
+        d['checks'] = [c.as_dict() for c in self.checks]
+        return d
+
+    def as_txt(self, fmt: Optional[str] = None) -> str:
+        lines = []
+        lines.append(f'Test: {self.description}')
+        lines.append(f'Result: {self.result}')
+        for line in [f'  {c.as_txt(fmt)}' for c in self.checks]:
+            lines.append(line)
+        return '\n'.join(lines)
+
+
+class Report(object):
+    def __init__(self, target: str):
+        self.timestamp = datetime.now().strftime('%c')
+        self.result = 'success'
+        self.target = target
         self.tests = []
 
-    def add_test_result(self, checks: List[Tuple[bool, str]], description: str) -> None:  # noqa
-        test = {}
-        test['test'] = description
-        test['result'] = 'success'
-        test['checks'] = []
-
-        for res, msg in checks:
-            if res is FAILURE:
-                test['result'] = 'failure'
-                self.result = 'failure'
-                break
-
-        for res, msg in checks:
-            check = {}
-            check['check'] = msg
-            check['value'] = None
-            if res is FAILURE:
-                check['result'] = 'failure'
-            else:
-                check['result'] = 'success'
-            test['checks'].append(check)
-
+    def add_test(self, test: Test) -> None:
+        if test.result == 'failure':
+            self.result = 'failure'
         self.tests.append(test)
+
+    def as_dict(self) -> Dict:
+        d = {}
+        for k in ['result', 'target', 'timestamp']:
+            d[k] = getattr(self, k)
+        d['tests'] = [t.as_dict() for t in self.tests]
+        return d
 
 
 class ReportSerializer(object):
@@ -72,21 +109,21 @@ class ReportSerializer(object):
             raise ValueError(emsg)
 
     def _json_serializer(self, report: Report) -> str:
-        json_report = {}
-        json_report['result'] = report.result
-        json_report['tests'] = report.tests
-        return json.dumps(json_report)
+        return json.dumps(report.as_dict())
 
     def _txt_serializer(self, report: Report) -> str:
         lines = []
-        lines.append(f'Validation result: {report.result}')
-
-        for test in report.tests:
-            lines.append(f'\t{test["test"]}: {test["result"]}')
-            for check in test['checks']:
-                lines.append(f'\t\t{check["check"]}: {check["result"]} ({check["value"]})')  # noqa
-
+        lines.append(f'Result: {report.result}')
+        lines.append(f'Target: {report.target}')
+        lines.append(f'Timestamp: {report.timestamp}')
+        for _lines in [t.as_txt().split('\n') for t in report.tests]:
+            for line in [f'  {_line}' for _line in _lines]:
+                lines.append(line)
         return '\n'.join(lines)
 
     def _xml_serializer(self, report: Report) -> str:
-        return '<validation><result>failure</result></validation>'
+        return f'''<report>
+    <target>{report.target}</target>
+    <timestamp>{report.timestamp}</timestamp>
+    <result>{report.result}</result>
+</report>'''
