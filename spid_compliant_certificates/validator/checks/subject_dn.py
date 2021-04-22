@@ -60,7 +60,7 @@ def subject_dn(subj: x509.Name, sector: str) -> List[Tuple[bool, str]]:
 
     # check if not allowed attrs are present
     for attr in NOT_ALLOWED_ATTRS:
-        msg = 'Name attribute [{attr._name}, {attr.dotted_string}] is not allowed in subjectDN'  # noqa
+        msg = f'Name attribute [{attr._name}, {attr.dotted_string}] is not allowed in subjectDN'  # noqa
         res = FAILURE if attr in subj_attrs else SUCCESS
         checks.append((res, msg))
 

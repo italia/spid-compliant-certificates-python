@@ -41,10 +41,10 @@ private: install cleanup
 		--sector private
 
 validate-public:
-	spid-compliant-certificates validator
+	spid-compliant-certificates validator --out-file report.json
 
 validate-private:
-	spid-compliant-certificates validator --sector private
+	spid-compliant-certificates validator --sector private --out-file report.json
 
 docker-build:
 	docker build --tag $(REPO):$(GIT_COMMIT) .

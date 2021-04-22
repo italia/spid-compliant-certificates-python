@@ -68,7 +68,10 @@ def logo():
 
 ''')  # noqa
 
-# main
+
+def _indent(txt: str, count=1) -> str:
+    i = '  '
+    return f'{i * count}{txt}'
 
 
 if __name__ == '__main__':
@@ -206,6 +209,21 @@ if __name__ == '__main__':
         type=pathlib.Path
     )
 
+    parser_v.add_argument(
+        '--out-form',
+        action='store',
+        choices=['txt', 'json', 'xml'],
+        default='json',
+        help='select the output file format'
+    )
+
+    parser_v.add_argument(
+        '--out-file',
+        action='store',
+        help='file where the validation report will be saved',
+        type=pathlib.Path
+    )
+
     logo()
     args = parser.parse_args()
 
@@ -238,19 +256,33 @@ if __name__ == '__main__':
             LOG.error(f'Unable to find certificate file {args.crt_file}')
             sys.exit(1)
         try:
-            LOG.info(f'Validating certificate {args.crt_file} '
+            LOG.info(f'Validating certificate {args.crt_file.absolute()} '
                      + f'against {args.sector} sector specifications')
             r = validate(args.crt_file, args.sector)
-            rs = ReportSerializer()
 
+            msg = f'Certificate {args.crt_file.absolute()} '
             if r.result == 'success':
-                LOG.info('It is ok')
-                LOG.info(rs.serialize(r, 'json'))
-            elif r.result == 'failure':
-                LOG.error('It is not good')
-                LOG.error(rs.serialize(r, 'json'))
+                msg += f'matches the {args.sector} sector specifications'
+                LOG.info(msg)
             else:
-                LOG.warn('Something gone wrong')
+                msg += f'violates the {args.sector} sector specifications'
+                LOG.error(msg)
+
+            for t in r.tests:
+                log = LOG.info if t.result == 'success' else LOG.error
+                log(_indent(t.description))
+                for c in t.checks:
+                    log = LOG.info if c.result == 'success' else LOG.error
+                    log(_indent(c.description, 2))
+
+            if args.out_file is not None:
+                msg = f'Saving report as {args.out_form.upper()} '
+                msg += f'in {args.out_file.absolute()}'
+                LOG.info(msg)
+                rs = ReportSerializer()
+                with open(args.out_file, 'wb') as fp:
+                    fp.write(rs.serialize(r, args.out_form).encode())
+                    fp.close()
 
         except Exception as e:
             LOG.error(e)
