@@ -43,42 +43,42 @@ def validate(crt_file: str, sector: str) -> Report:
     else:
         raise Exception(msg)
 
-    r = Report(str(crt_file.absolute()))
+    rep = Report(str(crt_file.absolute()))
 
     # check key type and size
-    r.add_test(_do_check(
+    rep.add_test(_do_check(
         checks.key_type_and_size(crt),
         'Checking the key type and size'
     ))
 
     # check digest algorithm
-    r.add_test(_do_check(
+    rep.add_test(_do_check(
         checks.digest_algorithm(crt.signature_hash_algorithm.name),
         'Checking the signature digest algorithm'
     ))
 
     # check SubjectDN
-    r.add_test(_do_check(
+    rep.add_test(_do_check(
         checks.subject_dn(crt.subject, sector),
         'Checking the SubjectDN'
     ))
 
     # check basicConstraints
-    r.add_test(_do_check(
+    rep.add_test(_do_check(
         checks.basic_constraints(crt.extensions),
         'Checking basicConstraints x509 extension'
     ))
 
     # check keyUsage
-    r.add_test(_do_check(
+    rep.add_test(_do_check(
         checks.key_usage(crt.extensions),
         'Checking keyUsage x509 extension'
     ))
 
     # check certificatePolicies
-    r.add_test(_do_check(
+    rep.add_test(_do_check(
         checks.certificate_policies(crt.extensions, sector),
         'Checking certificatePolicies x509 extension'
     ))
 
-    return r
+    return rep
