@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 from cryptography.hazmat.primitives import hashes
 
@@ -31,11 +31,11 @@ ALLOWED_ALGS = [
 ]
 
 
-def digest_algorithm(alg: str) -> List[Tuple[bool, str]]:
+def digest_algorithm(alg: str) -> List[Tuple[bool, str, Any]]:
     checks = []
 
-    msg = f'The digest algorithm must be one of {ALLOWED_ALGS} (now: {alg})'
+    msg = f'The digest algorithm must be one of {ALLOWED_ALGS}'
     res = FAILURE if alg not in ALLOWED_ALGS else SUCCESS
-    checks.append((res, msg))
+    checks.append((res, msg, alg))
 
     return checks

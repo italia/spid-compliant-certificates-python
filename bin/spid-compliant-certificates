@@ -273,7 +273,7 @@ if __name__ == '__main__':
                 log(_indent(t.description))
                 for c in t.checks:
                     log = LOG.info if c.is_success() else LOG.error
-                    log(_indent(c.description, 2))
+                    log(_indent(f'{c.description} (now: {c.value})', 2))
 
             if args.out_file is not None:
                 msg = f'Saving report as {args.out_form.upper()} '

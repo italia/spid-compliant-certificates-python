@@ -19,7 +19,7 @@
 # SOFTWARE.
 
 import re
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 from cryptography import x509
 from iso3166 import Country, countries
@@ -40,7 +40,6 @@ MANDATORY_ATTRS = [
     x509.OID_COMMON_NAME,
     x509.OID_COUNTRY_NAME,
     x509.OID_LOCALITY_NAME,
-    x509.OID_LOCALITY_NAME,
     x509.OID_ORGANIZATION_NAME,
 ]
 
@@ -54,29 +53,30 @@ NOT_ALLOWED_ATTRS = [
 ]
 
 
-def subject_dn(subj: x509.Name, sector: str) -> List[Tuple[bool, str]]:
+def subject_dn(subj: x509.Name, sector: str) -> List[Tuple[bool, str, Any]]:
     checks = []
     subj_attrs = [attr.oid for attr in subj]
 
     # check if not allowed attrs are present
     for attr in NOT_ALLOWED_ATTRS:
-        msg = f'Name attribute [{attr._name}, {attr.dotted_string}] is not allowed in subjectDN'  # noqa
-        res = FAILURE if attr in subj_attrs else SUCCESS
-        checks.append((res, msg))
+        msg = f'SubjectDN must not contain name attribute [{attr._name}, {attr.dotted_string}]'  # noqa
+        val = attr not in subj_attrs
+        res = SUCCESS if val else FAILURE
+        checks.append((res, msg, val))
 
     # check if all the mandatory attre are present
     for attr in MANDATORY_ATTRS:
-        msg = f'Name attribute [{attr._name}, {attr.dotted_string}] must be present in subjectDN'  # noqa
-        res = FAILURE if attr not in subj_attrs else SUCCESS
-        checks.append((res, msg))
+        msg = f'SubjectDN must contain name attribute [{attr._name}, {attr.dotted_string}]'  # noqa
+        val = attr in subj_attrs
+        res = SUCCESS if val else FAILURE
+        checks.append((res, msg, val))
 
     # check the name attribute value
     for attr in subj:
-        msg = f'Value for name attribute [{attr.oid._name}, {attr.oid.dotted_string}] can not be empty'  # noqa
-        res = FAILURE if not attr.value else SUCCESS
-        checks.append((res, msg))
-
+        msg = f'Name attribute [{attr.oid._name}, {attr.oid.dotted_string}] must have a value'  # noqa
         value = attr.value
+        res = SUCCESS if value else FAILURE
+        checks.append((res, msg, value))
 
         if attr.oid == OID_ORGANIZATION_IDENTIFIER:
             if sector == 'public':
@@ -86,19 +86,19 @@ def subject_dn(subj: x509.Name, sector: str) -> List[Tuple[bool, str]]:
             else:
                 msg = f'Invalid sector ({sector})'
                 res = FAILURE
-                checks.append((res, msg))
+                checks.append((res, msg, sector))
 
-            msg = f'Value for name attribute [{attr.oid._name}, {attr.oid.dotted_string}] must match [{pattern}] (now: {value})'  # noqa
-            res = FAILURE if not re.match(pattern, value) else SUCCESS
-            checks.append((res, msg))
+            msg = f'Value for name attribute [{attr.oid._name}, {attr.oid.dotted_string}] must match {pattern}'  # noqa
+            res = SUCCESS if re.match(pattern, value) else FAILURE
+            checks.append((res, msg, value))
 
         if attr.oid == x509.OID_COUNTRY_NAME:
-            msg = f'Value for name attribute [{attr.oid._name}, {attr.oid.dotted_string}] is not a valid country code ({value})'  # noqa
+            msg = f'Value for name attribute [{attr.oid._name}, {attr.oid.dotted_string}] must be a valid country code'  # noqa
             try:
-                res = FAILURE if not isinstance(countries.get(value), Country) else SUCCESS  # noqa
-                checks.append((res, msg))
-            except KeyError:
+                res = SUCCESS if isinstance(countries.get(value), Country) else FAILURE  # noqa
+                checks.append((res, msg, value))
+            except KeyError as e:
                 res = FAILURE
-                checks.append((res, msg))
+                checks.append((res, msg, str(e)))
 
     return checks

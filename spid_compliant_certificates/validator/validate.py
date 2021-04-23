@@ -62,8 +62,8 @@ def _do_check_v1(checks: List[Tuple[bool, str]], base_msg: str) -> bool:
 
 def _do_check_v2(checks: List[Tuple[bool, str]], base_msg: str) -> Test:
     t = Test(base_msg)
-    for res, msg in checks:
-        t.add_check(Check(msg, 'success' if res else 'failure', None))
+    for res, msg, val in checks:
+        t.add_check(Check(msg, 'success' if res else 'failure', val))
     return t
 
 
@@ -112,7 +112,7 @@ def validate(crt_file: str, sector: str) -> Report:
         'Checking keyUsage x509 extension'
     ))
 
-    # check certificatePolicier
+    # check certificatePolicies
     r.add_test(_do_check(
         checks.certificate_policies(crt.extensions, sector),
         'Checking certificatePolicies x509 extension'

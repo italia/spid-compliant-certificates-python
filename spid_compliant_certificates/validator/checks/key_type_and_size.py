@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 from cryptography import x509
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -33,7 +33,7 @@ ALLOWED_SIZES = [
 ]
 
 
-def key_type_and_size(cert: x509.Certificate) -> List[Tuple[bool, str]]:
+def key_type_and_size(cert: x509.Certificate) -> List[Tuple[bool, str, Any]]:
     checks = []
 
     # get the public key
@@ -44,18 +44,18 @@ def key_type_and_size(cert: x509.Certificate) -> List[Tuple[bool, str]]:
     pk_type = 'RSA' if isinstance(pk, rsa.RSAPublicKey) else 'NOT ALLOWED'
     msg = f'The keypair must be {exp_pk_type}'
     res = FAILURE if pk_type != exp_pk_type else SUCCESS
-    checks.append((res, msg))
+    checks.append((res, msg, pk_type))
 
     # check the key size
     min_size = 2048
     size = pk.key_size
 
-    msg = f'The key size must be greater than or equal to {min_size} (now: {size})'  # noqa
+    msg = f'The key size must be greater than or equal to {min_size}'
     res = FAILURE if size < min_size else SUCCESS
-    checks.append((res, msg))
+    checks.append((res, msg, size))
 
-    msg = f'The key size must be one of {ALLOWED_SIZES} (now: {size})'
+    msg = f'The key size must be one of {ALLOWED_SIZES}'
     res = FAILURE if size not in ALLOWED_SIZES else SUCCESS
-    checks.append((res, msg))
+    checks.append((res, msg, size))
 
     return checks
