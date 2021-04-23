@@ -261,7 +261,7 @@ if __name__ == '__main__':
             r = validate(args.crt_file, args.sector)
 
             msg = f'Certificate {args.crt_file.absolute()} '
-            if r.result == 'success':
+            if r.is_success():
                 msg += f'matches the {args.sector} sector specifications'
                 LOG.info(msg)
             else:
@@ -269,10 +269,10 @@ if __name__ == '__main__':
                 LOG.error(msg)
 
             for t in r.tests:
-                log = LOG.info if t.result == 'success' else LOG.error
+                log = LOG.info if t.is_success() else LOG.error
                 log(_indent(t.description))
                 for c in t.checks:
-                    log = LOG.info if c.result == 'success' else LOG.error
+                    log = LOG.info if c.is_success() else LOG.error
                     log(_indent(c.description, 2))
 
             if args.out_file is not None:

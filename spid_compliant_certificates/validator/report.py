@@ -44,6 +44,9 @@ class Check(object):
         else:
             return f'{self.description} [{self.result}][{self.value}]'
 
+    def is_success(self) -> bool:
+        return (True if self.result == 'success' else False)
+
 
 class Test(object):
     def __init__(self, description: str):
@@ -52,7 +55,7 @@ class Test(object):
         self.checks = []
 
     def add_check(self, check: Check) -> None:
-        if check.result == 'failure':
+        if not check.is_success():
             self.result = 'failure'
         self.checks.append(check)
 
@@ -71,6 +74,9 @@ class Test(object):
             lines.append(line)
         return '\n'.join(lines)
 
+    def is_success(self) -> bool:
+        return (True if self.result == 'success' else False)
+
 
 class Report(object):
     def __init__(self, target: str):
@@ -80,7 +86,7 @@ class Report(object):
         self.tests = []
 
     def add_test(self, test: Test) -> None:
-        if test.result == 'failure':
+        if not test.is_success():
             self.result = 'failure'
         self.tests.append(test)
 
@@ -90,6 +96,9 @@ class Report(object):
             d[k] = getattr(self, k)
         d['tests'] = [t.as_dict() for t in self.tests]
         return d
+
+    def is_success(self) -> bool:
+        return (True if self.result == 'success' else False)
 
 
 class ReportSerializer(object):
