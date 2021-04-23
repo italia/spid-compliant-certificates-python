@@ -22,53 +22,16 @@ from typing import List, Tuple
 
 from cryptography import x509
 
-from spid_compliant_certificates.commons import logger
 from spid_compliant_certificates.validator import checks
 from spid_compliant_certificates.validator.report import Check, Report, Test
 from spid_compliant_certificates.validator.utils import pem_to_der
 
-LOG = logger.LOG
 
-SUCCESS = True
-FAILURE = not SUCCESS
-
-
-def _indent(txt: str, count=1) -> str:
-    i = '    '
-    return f'{i * count}{txt}'
-
-
-def _do_check_v1(checks: List[Tuple[bool, str]], base_msg: str) -> bool:
-    is_success = True
-
-    for res, msg in checks:
-        if res is FAILURE:
-            is_success = False
-            break
-
-    if is_success:
-        LOG.info(f'{base_msg}: success')
-    else:
-        LOG.error(f'{base_msg}: failure')
-
-    for res, msg in checks:
-        if res is FAILURE:
-            LOG.error(_indent(msg))
-        else:
-            LOG.info(_indent(msg))
-
-    return is_success
-
-
-def _do_check_v2(checks: List[Tuple[bool, str]], base_msg: str) -> Test:
+def _do_check(checks: List[Tuple[bool, str]], base_msg: str) -> Test:
     t = Test(base_msg)
     for res, msg, val in checks:
         t.add_check(Check(msg, 'success' if res else 'failure', val))
     return t
-
-
-def _do_check(checks: List[Tuple[bool, str]], base_msg: str) -> bool:
-    return _do_check_v2(checks, base_msg)
 
 
 def validate(crt_file: str, sector: str) -> Report:
