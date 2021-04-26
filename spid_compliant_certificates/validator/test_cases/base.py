@@ -39,37 +39,37 @@ class TestBase(unittest.TestCase):
 
     def test_key_type_and_size(self):
         _checks = checks.key_type_and_size(self.cert)
-        for res, msg in _checks:
-            self.assertTrue(res, msg=msg)
+        for res, msg, val in _checks:
+            self.assertTrue(res, msg=f'{msg} ({val})')
 
     def test_digest_algorithm(self):
         alg = self.cert.signature_hash_algorithm.name
         _checks = checks.digest_algorithm(alg)
-        for res, msg in _checks:
-            self.assertTrue(res, msg=msg)
+        for res, msg, val in _checks:
+            self.assertTrue(res, msg=f'{msg} ({val})')
 
     def test_basic_constraints(self):
         extensions = self.cert.extensions
         _checks = checks.basic_constraints(extensions)
-        for res, msg in _checks:
-            self.assertTrue(res, msg=msg)
+        for res, msg, val in _checks:
+            self.assertTrue(res, msg=f'{msg} ({val})')
 
     def test_key_usage(self):
         extensions = self.cert.extensions
         _checks = checks.key_usage(extensions)
-        for res, msg in _checks:
-            self.assertTrue(res, msg=msg)
+        for res, msg, val in _checks:
+            self.assertTrue(res, msg=f'{msg} ({val})')
 
     def test_certificate_policies(self):
         extensions = self.cert.extensions
         sector = self.sector
         _checks = checks.certificate_policies(extensions, sector)
-        for res, msg in _checks:
-            self.assertTrue(res, msg=msg)
+        for res, msg, val in _checks:
+            self.assertTrue(res, msg=f'{msg} ({val})')
 
     def test_subject_dn(self):
         subj = self.cert.subject
         sector = self.sector
         _checks = checks.subject_dn(subj, sector)
-        for res, msg in _checks:
-            self.assertTrue(res, msg=msg)
+        for res, msg, val in _checks:
+            self.assertTrue(res, msg=f'{msg} ({val})')
