@@ -56,7 +56,7 @@ if platform.system() == 'Windows':
     fmt = '[%(levelname)1.1s] %(message)s'
     _sh.setFormatter(logging.Formatter(fmt))
 else:
-    levelname = _c('%(levelname)-5.5s')
+    levelname = _c('%(levelname)1.1s')
     fmt = '[' + levelname + '] %(message)s'
     _sh.setFormatter(logging.Formatter(fmt))
     _sh.addFilter(ColourFilter())
