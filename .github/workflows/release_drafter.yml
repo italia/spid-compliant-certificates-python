@@ -2,7 +2,7 @@ name: Release drafter
 
 on:
   push:
-    branches: [main, test-wf]
+    branches: [main]
   pull_request:
     types: [opened, reopened, synchronize]
 
