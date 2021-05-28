@@ -19,6 +19,7 @@
 # SOFTWARE.
 
 import json
+import xml.etree.ElementTree as ET
 from datetime import datetime
 from typing import Any, Callable, Dict, Optional
 
@@ -43,6 +44,13 @@ class Check(object):
             return fmt % self.as_dict()
         else:
             return f'{self.description} [{self.result}][{self.value}]'
+
+    def as_xml(self) -> ET.Element:
+        e = ET.Element('check')
+        for k in ['description', 'result', 'value']:
+            se = ET.SubElement(e, k)
+            se.text = str(getattr(self, k))
+        return e
 
     def is_success(self) -> bool:
         return (True if self.result == 'success' else False)
@@ -74,6 +82,16 @@ class Test(object):
             lines.append(line)
         return '\n'.join(lines)
 
+    def as_xml(self) -> ET.Element:
+        e = ET.Element('test')
+        for k in ['description', 'result']:
+            se = ET.SubElement(e, k)
+            se.text = str(getattr(self, k))
+        se = ET.SubElement(e, 'checks')
+        for c in [c.as_xml() for c in self.checks]:
+            se.append(c)
+        return e
+
     def is_success(self) -> bool:
         return (True if self.result == 'success' else False)
 
@@ -96,6 +114,16 @@ class Report(object):
             d[k] = getattr(self, k)
         d['tests'] = [t.as_dict() for t in self.tests]
         return d
+
+    def as_xml(self) -> ET.Element:
+        e = ET.Element('report')
+        for k in ['result', 'target', 'timestamp']:
+            se = ET.SubElement(e, k)
+            se.text = str(getattr(self, k))
+        se = ET.SubElement(e, 'tests')
+        for t in [t.as_xml() for t in self.tests]:
+            se.append(t)
+        return e
 
     def is_success(self) -> bool:
         return (True if self.result == 'success' else False)
@@ -131,8 +159,5 @@ class ReportSerializer(object):
         return '\n'.join(lines)
 
     def _xml_serializer(self, report: Report) -> str:
-        return f'''<report>
-    <target>{report.target}</target>
-    <timestamp>{report.timestamp}</timestamp>
-    <result>{report.result}</result>
-</report>'''
+        doc = report.as_xml()
+        return ET.tostring(doc, encoding='unicode')
