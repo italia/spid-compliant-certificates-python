@@ -212,7 +212,7 @@ if __name__ == '__main__':
     parser_v.add_argument(
         '--out-form',
         action='store',
-        choices=['txt', 'json', 'xml'],
+        choices=['txt', 'json', 'xml', 'yml', 'yaml'],
         default='json',
         help='select the output file format'
     )

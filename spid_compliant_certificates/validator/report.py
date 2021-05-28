@@ -23,6 +23,9 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from typing import Any, Callable, Dict, Optional
 
+from ruamel.yaml import YAML
+from ruamel.yaml.compat import StringIO
+
 SUCCESS = True
 FAILURE = not SUCCESS
 
@@ -141,6 +144,8 @@ class ReportSerializer(object):
             return self._txt_serializer
         elif format == 'xml':
             return self._xml_serializer
+        elif format == 'yml' or format == 'yaml':
+            return self._yml_serializer
         else:
             emsg = f'Format {format} is not accepted'
             raise ValueError(emsg)
@@ -161,3 +166,12 @@ class ReportSerializer(object):
     def _xml_serializer(self, report: Report) -> str:
         doc = report.as_xml()
         return ET.tostring(doc, encoding='unicode')
+
+    def _yml_serializer(self, report: Report) -> str:
+        buf = StringIO()
+        yaml = YAML()
+        yaml.default_flow_style = False
+        yaml.line_break = False
+        yaml.width = 256
+        yaml.dump(report.as_dict(), buf)
+        return buf.getvalue()
