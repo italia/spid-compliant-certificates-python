@@ -1,4 +1,4 @@
-cryptography==3.4.7
+cryptography==3.4.8
 iso3166==1.0.1
 packaging==20.9
 requests==2.25.1
