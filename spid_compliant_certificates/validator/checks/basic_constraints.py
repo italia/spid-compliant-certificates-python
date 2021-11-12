@@ -28,7 +28,6 @@ FAILURE = not SUCCESS
 
 def basic_constraints(extensions: x509.Extensions) -> List[Tuple[bool, str, Any]]:  # noqa
     checks = []
-
     # basicConstraints: CA:FALSE
     ext_cls = x509.BasicConstraints
     ext_name = ext_cls.oid._name
@@ -44,6 +43,9 @@ def basic_constraints(extensions: x509.Extensions) -> List[Tuple[bool, str, Any]
         res = FAILURE if ext.value.ca else SUCCESS
         checks.append((res, msg, ext.value.ca))
     except x509.ExtensionNotFound:
+        msg = f'{ext_name} must be present'
+        checks.append((FAILURE, msg, None))
+    except ValueError:
         msg = f'{ext_name} must be present'
         checks.append((FAILURE, msg, None))
 

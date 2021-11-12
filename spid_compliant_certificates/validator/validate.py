@@ -64,21 +64,28 @@ def validate(crt_file: str, sector: str) -> Report:
     ))
 
     # check basicConstraints
-    rep.add_test(_do_check(
-        checks.basic_constraints(crt.extensions),
-        'Checking basicConstraints x509 extension'
-    ))
+    _ext_msg = 'Checking basicConstraints x509 extension'
+    try:
+        rep.add_test(_do_check(
+            checks.basic_constraints(crt.extensions),
+            _ext_msg
+        ))
 
-    # check keyUsage
-    rep.add_test(_do_check(
-        checks.key_usage(crt.extensions),
-        'Checking keyUsage x509 extension'
-    ))
+        # check keyUsage
+        rep.add_test(_do_check(
+            checks.key_usage(crt.extensions),
+            'Checking keyUsage x509 extension'
+        ))
 
-    # check certificatePolicies
-    rep.add_test(_do_check(
-        checks.certificate_policies(crt.extensions, sector),
-        'Checking certificatePolicies x509 extension'
-    ))
+        # check certificatePolicies
+        rep.add_test(_do_check(
+            checks.certificate_policies(crt.extensions, sector),
+            'Checking certificatePolicies x509 extension'
+        ))
+
+    except ValueError as e:
+        test = Test(f"Critical Error on parsing extensions: {e}")
+        test.add_check(Check(f"{_ext_msg} critical error", 'failure', False))
+        rep.add_test(test)
 
     return rep

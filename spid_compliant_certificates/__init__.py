@@ -25,7 +25,7 @@ from packaging.version import Version
 _maj = 0
 
 # minor version
-_min = 2
+_min = 3
 
 # micro version
 _mic = 0
