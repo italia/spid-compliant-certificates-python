@@ -63,6 +63,12 @@ def validate(crt_file: str, sector: str) -> Report:
         'Checking the SubjectDN'
     ))
 
+    # check time 
+    rep.add_test(_do_check(
+        checks.not_expired(crt),
+        'Checking that the certificates is not expired'
+    ))
+
     # check basicConstraints
     _ext_msg = 'Checking basicConstraints x509 extension'
     try:

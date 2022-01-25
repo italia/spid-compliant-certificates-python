@@ -30,6 +30,8 @@ from spid_compliant_certificates.validator.checks.key_usage import \
     key_usage  # noqa
 from spid_compliant_certificates.validator.checks.subject_dn import \
     subject_dn  # noqa
+from spid_compliant_certificates.validator.checks.time_validity import \
+    not_expired  # noqa
 
 _all_ = [
     'basic_constraints',
@@ -38,4 +40,5 @@ _all_ = [
     'key_type_and_size',
     'key_usage',
     'subject_dn',
+    'not_expired'
 ]
