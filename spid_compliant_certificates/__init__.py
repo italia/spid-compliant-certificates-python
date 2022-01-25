@@ -28,7 +28,7 @@ _maj = 0
 _min = 4
 
 # micro version
-_mic = 0
+_mic = 1
 
 # release level (alpha, beta, rc, final)
 _rel = 'final'
