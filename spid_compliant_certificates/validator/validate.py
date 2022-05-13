@@ -82,7 +82,6 @@ def validate(crt_file: str, sector: str) -> Report:
             checks.key_usage(crt.extensions),
             'Checking keyUsage x509 extension'
         ))
-
         # check certificatePolicies
         rep.add_test(_do_check(
             checks.certificate_policies(crt.extensions, sector),

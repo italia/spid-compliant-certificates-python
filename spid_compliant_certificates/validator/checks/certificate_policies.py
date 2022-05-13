@@ -89,16 +89,27 @@ def certificate_policies(extensions: x509.Extensions, sector: str) -> List[Tuple
                         res = FAILURE if etext != exp_etext else SUCCESS
                         checks.append((res, msg, etext))
             if sector == 'private' and oid == '1.3.76.16.4.3.1':
-                for q in p.policy_qualifiers:
+                _qualifiers = p.policy_qualifiers or []
+                msg = f'policy {oid} must have '
+                for q in _qualifiers:
                     if isinstance(q, x509.extensions.UserNotice):
                         exp_etext = 'cert_SP_Priv'
                         etext = q.explicit_text
 
-                        msg = f'policy {oid} must have '
                         msg += f'UserNotice.ExplicitText={exp_etext}'  # noqa
 
                         res = FAILURE if etext != exp_etext else SUCCESS
                         checks.append((res, msg, etext))
+
+                if not _qualifiers:
+                    checks.append(
+                        (
+                            FAILURE,
+                            f'policy {oid} must have a valid policy',
+                            ""
+                        )
+                    )
+
     except x509.ExtensionNotFound as e:
         msg = f'{ext_name} must be present'
         checks.append((FAILURE, msg, str(e)))
