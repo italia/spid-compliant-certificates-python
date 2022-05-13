@@ -25,10 +25,10 @@ from packaging.version import Version
 _maj = 0
 
 # minor version
-_min = 4
+_min = 5
 
 # micro version
-_mic = 2
+_mic = 0
 
 # release level (alpha, beta, rc, final)
 _rel = 'final'

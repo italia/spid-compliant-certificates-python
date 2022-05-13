@@ -240,8 +240,8 @@ def gen_csr(key: rsa.RSAPrivateKey, cert_opts: Dict, crypto_opts: Dict) -> None:
         fp.write(csr.public_bytes(serialization.Encoding.PEM))
         fp.close()
 
-    # only for test purpose :)
-    # gen_self_signed(key, cert_opts, crypto_opts)
+    # this creates the CRT also for privates
+    gen_self_signed(key, cert_opts, crypto_opts)
 
 
 def gen_self_signed(key: rsa.RSAPrivateKey, cert_opts: Dict, crypto_opts: Dict) -> None:  # noqa
