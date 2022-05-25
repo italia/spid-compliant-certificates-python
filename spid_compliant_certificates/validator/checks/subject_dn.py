@@ -79,9 +79,9 @@ def subject_dn(subj: x509.Name, sector: str) -> List[Tuple[bool, str, Any]]:
         checks.append((res, msg, value))
 
         if attr.oid == OID_ORGANIZATION_IDENTIFIER:
-            if sector == 'public':
+            if sector.lower() == 'public':
                 pattern = r'^PA:IT-\S{1,11}$'
-            elif sector == 'private':
+            elif sector.lower() == 'private':
                 pattern = r'^(CF:IT-[a-zA-Z0-9]{16}|VATIT-\d{11})$'
             else:
                 msg = f'Invalid sector ({sector})'
