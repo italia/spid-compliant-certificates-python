@@ -46,7 +46,7 @@ MANDATORY_ATTRS = [
 NOT_ALLOWED_ATTRS = [
     OID_INITIALS,
     OID_NAME,
-    x509.OID_EMAIL_ADDRESS,
+#    x509.OID_EMAIL_ADDRESS,  # è ammesso(deve solo essere impersonale)
     x509.OID_GIVEN_NAME,
     x509.OID_PSEUDONYM,
     x509.OID_SURNAME,
@@ -59,7 +59,7 @@ def subject_dn(subj: x509.Name, sector: str) -> List[Tuple[bool, str, Any]]:
 
     # check if not allowed attrs are present
     for attr in NOT_ALLOWED_ATTRS:
-        msg = f'SubjectDN must not contain name attribute [{attr._name}, {attr.dotted_string}]'  # noqa
+        msg = f'SubjectDN must not contain {attr._name}  attribute [{attr.dotted_string}]'  # noqa
         val = attr not in subj_attrs
         res = SUCCESS if val else FAILURE
         checks.append((res, msg, val))
