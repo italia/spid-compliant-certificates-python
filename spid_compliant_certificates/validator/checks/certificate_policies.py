@@ -62,53 +62,53 @@ def certificate_policies(extensions: x509.Extensions, sector: str) -> List[Tuple
             res = SUCCESS if is_present else FAILURE
             checks.append((res, msg, is_present))
 
-        # check the content of the policies
-        for p in policies:
-            oid = p.policy_identifier.dotted_string
-            if oid == '1.3.76.16.6':
-                for q in p.policy_qualifiers:
-                    if isinstance(q, x509.extensions.UserNotice):
-                        exp_etext = 'agIDcert'
-                        etext = q.explicit_text
+        # # check the content of the policies
+        # for p in policies:
+        #     oid = p.policy_identifier.dotted_string
+        #     if oid == '1.3.76.16.6':
+        #         for q in p.policy_qualifiers:
+        #             if isinstance(q, x509.extensions.UserNotice):
+        #                 exp_etext = 'agIDcert'
+        #                 etext = q.explicit_text
 
-                        msg = f'policy {oid} must have '
-                        msg += f'UserNotice.ExplicitText={exp_etext}'  # noqa
+        #                 msg = f'policy {oid} must have '
+        #                 msg += f'UserNotice.ExplicitText={exp_etext}'  # noqa
 
-                        res = FAILURE if etext != exp_etext else SUCCESS
-                        checks.append((res, msg, etext))
+        #                 res = FAILURE if etext != exp_etext else SUCCESS
+        #                 checks.append((res, msg, etext))
 
-            if sector == 'public' and oid == '1.3.76.16.4.2.1':
-                for q in p.policy_qualifiers:
-                    if isinstance(q, x509.extensions.UserNotice):
-                        exp_etext = 'cert_SP_Pub'
-                        etext = q.explicit_text
+        #     if sector == 'public' and oid == '1.3.76.16.4.2.1':
+        #         for q in p.policy_qualifiers:
+        #             if isinstance(q, x509.extensions.UserNotice):
+        #                 exp_etext = 'cert_SP_Pub'
+        #                 etext = q.explicit_text
 
-                        msg = f'policy {oid} must have '
-                        msg += f'UserNotice.ExplicitText={exp_etext}'  # noqa
+        #                 msg = f'policy {oid} must have '
+        #                 msg += f'UserNotice.ExplicitText={exp_etext}'  # noqa
 
-                        res = FAILURE if etext != exp_etext else SUCCESS
-                        checks.append((res, msg, etext))
-            if sector == 'private' and oid == '1.3.76.16.4.3.1':
-                _qualifiers = p.policy_qualifiers or []
-                msg = f'policy {oid} must have '
-                for q in _qualifiers:
-                    if isinstance(q, x509.extensions.UserNotice):
-                        exp_etext = 'cert_SP_Priv'
-                        etext = q.explicit_text
+        #                 res = FAILURE if etext != exp_etext else SUCCESS
+        #                 checks.append((res, msg, etext))
+        #     if sector == 'private' and oid == '1.3.76.16.4.3.1':
+        #         _qualifiers = p.policy_qualifiers or []
+        #         msg = f'policy {oid} must have '
+        #         for q in _qualifiers:
+        #             if isinstance(q, x509.extensions.UserNotice):
+        #                 exp_etext = 'cert_SP_Priv'
+        #                 etext = q.explicit_text
 
-                        msg += f'UserNotice.ExplicitText={exp_etext}'  # noqa
+        #                 msg += f'UserNotice.ExplicitText={exp_etext}'  # noqa
 
-                        res = FAILURE if etext != exp_etext else SUCCESS
-                        checks.append((res, msg, etext))
+        #                 res = FAILURE if etext != exp_etext else SUCCESS
+        #                 checks.append((res, msg, etext))
 
-                if not _qualifiers:
-                    checks.append(
-                        (
-                            FAILURE,
-                            f'policy {oid} must have a valid policy',
-                            ""
-                        )
-                    )
+        #         if not _qualifiers:
+        #             checks.append(
+        #                 (
+        #                     FAILURE,
+        #                     f'policy {oid} must have a valid policy',
+        #                     ""
+        #                 )
+        #             )
 
     except x509.ExtensionNotFound as e:
         msg = f'{ext_name} must be present'
