@@ -52,6 +52,9 @@ NOT_ALLOWED_ATTRS = [
     x509.OID_SURNAME,
 ]
 
+PUB_SECTOR_PATTERN = r'^PA:IT-\S{1,11}$'
+PRI_SECTOR_PATTERN = r'^(CF:IT-[a-zA-Z0-9]{16}|VATIT-\d{11})$'
+
 
 def subject_dn(subj: x509.Name, sector: str) -> List[Tuple[bool, str, Any]]:
     checks = []
@@ -78,11 +81,12 @@ def subject_dn(subj: x509.Name, sector: str) -> List[Tuple[bool, str, Any]]:
         res = SUCCESS if value else FAILURE
         checks.append((res, msg, value))
 
+        pattern = f"a valid pattern, {PUB_SECTOR_PATTERN} or {PRI_SECTOR_PATTERN}"
         if attr.oid == OID_ORGANIZATION_IDENTIFIER:
             if sector.lower() == 'public':
-                pattern = r'^PA:IT-\S{1,11}$'
+                pattern = PUB_SECTOR_PATTERN
             elif sector.lower() == 'private':
-                pattern = r'^(CF:IT-[a-zA-Z0-9]{16}|VATIT-\d{11})$'
+                pattern = PRI_SECTOR_PATTERN
             else:
                 msg = f'Invalid sector ({sector})'
                 res = FAILURE
