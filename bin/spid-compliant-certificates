@@ -98,7 +98,7 @@ if __name__ == '__main__':
     parser_g.add_argument(
         '--sector',
         action='store',
-        choices=['private', 'public'],
+        choices=['private', 'public', 'public-test'],
         default='public',
         help='select the specifications to be followed'
     )
@@ -196,7 +196,7 @@ if __name__ == '__main__':
     parser_v.add_argument(
         '--sector',
         action='store',
-        choices=['private', 'public'],
+        choices=['private', 'public', 'public-test'],
         default='public',
         help='select the specifications to be followed'
     )
