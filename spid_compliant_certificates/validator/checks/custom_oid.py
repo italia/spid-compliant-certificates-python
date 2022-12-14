@@ -18,20 +18,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from cryptography import x509
+from cryptography.hazmat._oid  import ObjectIdentifier
 
 
-class CustomObjectIdentifier(x509.ObjectIdentifier):
-    def __init__(self, dotted_string: str, name: str) -> None:
-        super(CustomObjectIdentifier, self).__init__(dotted_string)
-        self.name = name
-
-    @property
-    def _name(self) -> str:
-        return self.name
-
-
-OID_INITIALS = CustomObjectIdentifier('2.5.4.43', 'initials')
-OID_NAME = CustomObjectIdentifier('2.5.4.41', 'name')
-OID_ORGANIZATION_IDENTIFIER = CustomObjectIdentifier('2.5.4.97', 'organizationIdentifier')  # noqa
-OID_URI = CustomObjectIdentifier('2.5.4.83', 'uri')
+OID_INITIALS = ObjectIdentifier('2.5.4.43')
+OID_NAME = ObjectIdentifier('2.5.4.41')
+OID_ORGANIZATION_IDENTIFIER = ObjectIdentifier('2.5.4.97')  # noqa
+OID_URI = ObjectIdentifier('2.5.4.83')
