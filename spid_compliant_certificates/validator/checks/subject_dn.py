@@ -87,6 +87,8 @@ def subject_dn(subj: x509.Name, sector: str) -> List[Tuple[bool, str, Any]]:
                 pattern = PUB_SECTOR_PATTERN
             elif sector.lower() == 'private':
                 pattern = PRI_SECTOR_PATTERN
+            elif sector.lower() == 'public-test':
+                pattern = PUB_SECTOR_PATTERN
             else:
                 msg = f'Invalid sector ({sector})'
                 res = FAILURE

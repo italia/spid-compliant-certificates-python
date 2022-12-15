@@ -49,62 +49,63 @@ def _validate_private_arguments(cert_opts: Dict) -> None:
         raise ValueError(emsg)
 
 
-def _validate_public_arguments(cert_opts: Dict) -> None:
+def _validate_public_arguments(cert_opts: Dict, is_test=False) -> None:
     # validate organizationIdentifier
     pattern = r'^PA:IT-\S{1,11}$'
     org_id = cert_opts['org_id']
     if not re.match(pattern, org_id):
         emsg = (f'Invalid value for organization identifier ({org_id})')
         raise ValueError(emsg)
+    
+    if not is_test:
+        # check if the ipa code is valid
+        ipa_code = org_id[6:]
 
-    # check if the ipa code is valid
-    ipa_code = org_id[6:]
-
-    search_api = 'https://indicepa.gov.it/PortaleServices/api/ente/ricerca'
-    query = json.dumps({
-        'area': None,
-        'codEnte': ipa_code,
-        'codiceCategoria': None,
-        'codiceFiscaleRicerca': None,
-        'denominazione': None,
-        'idTipoServizioDigitale': None,
-        'lingueMinoritarie': None,
-        'paginazione': {
-            'campoOrdinamento': 'idEnte',
-            'numTotalePagine': None,
-            'numeroRigheTotali': None,
-            'paginaCorrente': None,
-            'paginaRichiesta': 1,
-            'righePerPagina': None,
-            'tipoOrdinamento': 'asc',
+        search_api = 'https://indicepa.gov.it/PortaleServices/api/ente/ricerca'
+        query = json.dumps({
+            'area': None,
+            'codEnte': ipa_code,
+            'codiceCategoria': None,
+            'codiceFiscaleRicerca': None,
+            'denominazione': None,
+            'idTipoServizioDigitale': None,
+            'lingueMinoritarie': None,
+            'paginazione': {
+                'campoOrdinamento': 'idEnte',
+                'numTotalePagine': None,
+                'numeroRigheTotali': None,
+                'paginaCorrente': None,
+                'paginaRichiesta': 1,
+                'righePerPagina': None,
+                'tipoOrdinamento': 'asc',
+            }
+        }, separators=(',', ':'))
+        headers = {
+            'content-type': 'application/json',
         }
-    }, separators=(',', ':'))
-    headers = {
-        'content-type': 'application/json',
-    }
 
-    r = requests.post(search_api, headers=headers, data=query)
-    res = json.loads(r.text)
+        r = requests.post(search_api, headers=headers, data=query)
+        res = json.loads(r.text)
 
-    if not res['risposta']['listaResponse']:
-        emsg = [
-            f'The IPA code ({ipa_code}) refers to something that does not exist.',  # noqa
-            'Check it by yourself at https://indicepa.gov.it/ipa-portale/consultazione/indirizzo-sede/ricerca-ente'  # noqa
-        ]
-        raise ValueError(' '.join(emsg))
+        if not res['risposta']['listaResponse']:
+            emsg = [
+                f'The IPA code ({ipa_code}) refers to something that does not exist.',  # noqa
+                'Check it by yourself at https://indicepa.gov.it/ipa-portale/consultazione/indirizzo-sede/ricerca-ente'  # noqa
+            ]
+            raise ValueError(' '.join(emsg))
 
-    ipa_code_is_valid = False
-    for e in res['risposta']['listaResponse']:
-        if e['codEnte'] == ipa_code:
-            ipa_code_is_valid = True
-            break
+        ipa_code_is_valid = False
+        for e in res['risposta']['listaResponse']:
+            if e['codEnte'] == ipa_code:
+                ipa_code_is_valid = True
+                break
 
-    if not ipa_code_is_valid:
-        emsg = [
-            f'The IPA code ({ipa_code}) refers to something that does not exist.',  # noqa
-            'Check it by yourself at https://indicepa.gov.it/ipa-portale/consultazione/indirizzo-sede/ricerca-ente'  # noqa
-        ]
-        raise ValueError(' '.join(emsg))
+        if not ipa_code_is_valid:
+            emsg = [
+                f'The IPA code ({ipa_code}) refers to something that does not exist.',  # noqa
+                'Check it by yourself at https://indicepa.gov.it/ipa-portale/consultazione/indirizzo-sede/ricerca-ente'  # noqa
+            ]
+            raise ValueError(' '.join(emsg))
 
 
 def validate_arguments(cert_opts: Dict) -> None:
@@ -113,6 +114,8 @@ def validate_arguments(cert_opts: Dict) -> None:
         _validate_private_arguments(cert_opts)
     elif sector == 'public':
         _validate_public_arguments(cert_opts)
+    elif sector == 'public-test':
+        _validate_public_arguments(cert_opts, True)
     else:
         emsg = f'Invalid value for sector ({sector})'
         raise Exception(emsg)
@@ -185,6 +188,14 @@ def _extensions(key: rsa.RSAPrivateKey, cert_opts: Dict) -> List[Tuple[bool, x50
             )
         )
     elif sector == 'public':
+        policies.append(
+            x509.PolicyInformation(
+                x509.ObjectIdentifier('1.3.76.16.4.2.1'), [
+                    x509.UserNotice(None, 'cert_SP_Pub')
+                ]
+            )
+        )
+    elif sector == 'public-test':
         policies.append(
             x509.PolicyInformation(
                 x509.ObjectIdentifier('1.3.76.16.4.2.1'), [
